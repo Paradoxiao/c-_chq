@@ -1,70 +1,26 @@
-#include <cstring>
-#include <iostream>
-using namespace std;
-class Person {
-private:
-  char *name;
-
-public:
-  Person() {}
-  Person(char *n) {
-    name = new char[strlen(n) + 1];
-    strcpy(name, n);
-  }
-  Person(const Person &other) {
-    name = new char[strlen(other.name + 1)];
-    strcpy(name, other.name);
-  }
-  void setName(char *n) {
-    delete[] name;
-    name = new char[strlen(n) + 1];
-    strcpy(name, n);
-  }
-  char *getName() {
-    return name;
-  }
-  ~Person() {
-    delete name;
-  }
+#include <cstdio>
+#define NULLELEM -1
+struct Sq_BiTree {
+  int *base;
+  int length;
+  int capacity;
 };
-class PersonList {
-private:
-  Person *persons;
-  int n;
-
-public:
-  PersonList(int n) {
-    persons = new Person[n];
-    this->n = n;
-  }
-  void getName() {
-    char name[100];
-    for (int i = 0; i < n; i++) {
-      cin >> name;
-      persons[i].setName(name);
-    }
-  }
-  int count() {
-    int count = 0;
-    for (int i = 0; i < n; i++) {
-      char *temp = persons[i].getName();
-      for (int j = 0; j < strlen(temp); j++)
-        if (temp[j] == 'a' || temp[j] == 'A') {
-          count++;
-          break;
-        }
-    }
-    return count;
-  }
-  ~PersonList() {
-    delete[] persons;
-  }
-};
+int GetLeaf(Sq_BiTree T, int root) {
+  if (T.base == NULL || root >= T.length || T.base[root] == NULLELEM)
+    return 0;
+  int left = 2 * root + 1;
+  int right = 2 * root + 2;
+  if ((left >= T.length || T.base[left] == NULLELEM) &&
+      (right >= T.length || T.base[right] == NULLELEM))
+    return 1;
+  int cnt = 0;
+  if (left < T.length)
+    cnt += GetLeaf(T, left);
+  if (right < T.length)
+    cnt += GetLeaf(T, right);
+  return cnt;
+}
 int main() {
-  int n;
-  cin >> n;
-  PersonList persons(n);
-  persons.getName();
-  cout << persons.count();
+
   return 0;
 }
