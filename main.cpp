@@ -1,53 +1,57 @@
 #include <iostream>
 using namespace std;
-class Date {
+class CPU {
 private:
-  int year, month, day;
+  double f;
 
 public:
-  Date(int y = 0, int m = 0, int d = 0) : year(y), month(m), day(d) {
-    cout << "Date is created.\n";
+  CPU(double f) : f(f) {
+    cout << "CPU is created.\n";
   }
-  ~Date() {
-    cout << "Date is erased.\n";
-  }
-  int getYear() const {
-    return year;
-  }
-  int getMonth() const {
-    return month;
-  }
-  int getDay() const {
-    return day;
+
+  ~CPU() {
+    cout << "CPU is destroyed.\n";
   }
 };
-class Person {
+class Disk {
 private:
-  Date birthday;
+  double capacity;
 
 public:
-  Person(int year, int month, int day) : birthday(year, month, day) {
-    cout << "Person is created.\n";
+  Disk(double size) : capacity(size) {
+    cout << "Disk is created.\n";
   }
-  Person() {}
-  // Person(int year, int month, int day) {
-  //   cout << "Person is created.\n";
-  //   birthday = Date(year, month, day);
-  // }
-  ~Person() {
-    cout << "Person is erased.\n";
+  ~Disk() {
+    cout << "Disk is destroyed.\n";
   }
-  void print() {
-    cout << birthday.getYear() << "-" << birthday.getMonth() << "-" << birthday.getDay() << endl;
+};
+class Memory {
+private:
+  double capacity;
+
+public:
+  Memory(double size) : capacity(size) {
+    cout << "Memory is created.\n";
+  }
+  ~Memory() {
+    cout << "Memory is destroyed.\n";
+  }
+};
+class Computer {
+private:
+  CPU cpu;
+  Disk disk;
+  Memory ram;
+
+public:
+  Computer(double f, double disk, double ram) : cpu(f), disk(disk), ram(ram) {
+    cout << "computer is created.\n";
+  }
+  ~Computer() {
+    cout << "computer is destroyed.\n";
   }
 };
 int main() {
-  // Person person(1, 1, 1);
-  // int a(1);
-  // double b(2.0);
-  // char c('3');
-  // cout << a << b << c << endl;
-  // person.print();
-  Person d;
+  Computer my_computer(1, 1, 1);
   return 0;
 }
