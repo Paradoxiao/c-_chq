@@ -1,41 +1,53 @@
-// const
-// 常数数据成员
-// 常成员函数
-// 常对象
-// static
-// 类成员
 #include <iostream>
 using namespace std;
-class Person {
+class Date {
 private:
-  int age;
-  const bool sex;
-  static int cnt;
+  int year, month, day;
 
 public:
-  Person(int a, bool s) : sex(s) {
-    age = a;
-    cnt++;
+  Date(int y = 0, int m = 0, int d = 0) : year(y), month(m), day(d) {
+    cout << "Date is created.\n";
   }
-  void print() const {
-    // age = 20;
-    cout << age << " " << sex << endl;
+  ~Date() {
+    cout << "Date is erased.\n";
   }
-  static void setAge(int a) {
-    age = a;
+  int getYear() const {
+    return year;
   }
-  static int getCnt() {
-    return cnt;
+  int getMonth() const {
+    return month;
   }
-  // void setSex(bool s) {    sex = s;  }
+  int getDay() const {
+    return day;
+  }
 };
-int Person::cnt = 0;
+class Person {
+private:
+  Date birthday;
+
+public:
+  Person(int year, int month, int day) : birthday(year, month, day) {
+    cout << "Person is created.\n";
+  }
+  Person() {}
+  // Person(int year, int month, int day) {
+  //   cout << "Person is created.\n";
+  //   birthday = Date(year, month, day);
+  // }
+  ~Person() {
+    cout << "Person is erased.\n";
+  }
+  void print() {
+    cout << birthday.getYear() << "-" << birthday.getMonth() << "-" << birthday.getDay() << endl;
+  }
+};
 int main() {
-  const Person person(18, false);
-  person.setAge(10);
-  cout << Person::getCnt() << " " << person.getCnt() << endl;
-  person.print();
-  // Person.setAge(20);
-  person.print();
+  // Person person(1, 1, 1);
+  // int a(1);
+  // double b(2.0);
+  // char c('3');
+  // cout << a << b << c << endl;
+  // person.print();
+  Person d;
   return 0;
 }
