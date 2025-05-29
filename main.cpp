@@ -1,57 +1,61 @@
 #include <iostream>
+#include <string>
 using namespace std;
-class CPU {
-private:
-  double f;
-
+class Base {
 public:
-  CPU(double f) : f(f) {
-    cout << "CPU is created.\n";
+  Base() {
+    cout << "Base is created.\n";
   }
-
-  ~CPU() {
-    cout << "CPU is destroyed.\n";
+  ~Base() {
+    cout << "Base is erased.\n";
   }
 };
-class Disk {
-private:
-  double capacity;
-
+class Date : public Base {
 public:
-  Disk(double size) : capacity(size) {
-    cout << "Disk is created.\n";
+  Date() {
+    cout << "Date is created.\n";
   }
-  ~Disk() {
-    cout << "Disk is destroyed.\n";
+  ~Date() {
+    cout << "Date is erased.\n";
   }
 };
-class Memory {
-private:
-  double capacity;
+class Person {
+protected:
+  string name;
+  int age;
+  Date birthday;
 
 public:
-  Memory(double size) : capacity(size) {
-    cout << "Memory is created.\n";
+  Person(string n = "", int a = 0) : name(n), age(a) {
+    cout << "Person is created.\n";
   }
-  ~Memory() {
-    cout << "Memory is destroyed.\n";
+  ~Person() {
+    cout << "Person is erased.\n";
+  }
+  void print() {
+    cout << name << " " << age << " ";
   }
 };
-class Computer {
+class Student : public Person {
 private:
-  CPU cpu;
-  Disk disk;
-  Memory ram;
+  string major;
+  Date time;
 
 public:
-  Computer(double f, double disk, double ram) : cpu(f), disk(disk), ram(ram) {
-    cout << "computer is created.\n";
+  Student(string n = "", int a = 0, string m = "") : Person(n, a), major(m) {
+    cout << "Student is created.\n";
   }
-  ~Computer() {
-    cout << "computer is destroyed.\n";
+  void print() {
+    cout << name << " " << age << " " << major << endl;
+  }
+  ~Student() {
+    cout << "Student is erased.\n";
   }
 };
 int main() {
-  Computer my_computer(1, 1, 1);
+  Student Yunru("云茹", 18, "science");
+  Yunru.print();
+  // // Student student;
+  // student.print();
   return 0;
 }

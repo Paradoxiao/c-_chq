@@ -3,4 +3,5 @@ Hover:
 Diagnostics:
   UnusedIncludes: Strict
 CompileFlags:
-  Add: [ -Wall, -std=c++98 ]
+# Add: [ -Wall, -std=c++98 ]
+  Add: [ -std=c++98 ]
