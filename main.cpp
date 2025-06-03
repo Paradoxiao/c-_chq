@@ -1,36 +1,57 @@
 #include <iostream>
 using namespace std;
-class Person {
+class Base1 {
 protected:
-  int age;
+  int mem;
 
 public:
-  Person(int a) {
-    age = a;
+  Base1(int m) : mem(m) {
+    cout << "Base1 is created." << endl;
+  }
+  ~Base1() {
+    cout << "Base1 is erased." << endl;
   }
   void print() {
-    cout << age << endl;
+    cout << "Base1 " << mem << endl;
   }
 };
-class Student : public Person {
-private:
-  string major;
+class Base2 {
+protected:
+  int mem;
 
 public:
-  Student(int a, string major) : Person(a), major(major) {}
-  Student(const Student &other) : Person(other), major(other.major) {}
+  Base2(int m) : mem(m) {
+    cout << "Base2 is created." << endl;
+  }
+  ~Base2() {
+    cout << "Base2 is erased." << endl;
+  }
+
   void print() {
-    cout << major << " " << age << endl;
+    cout << "Base2 " << mem << endl;
+  }
+};
+class Derived : public Base1, public Base2 {
+private:
+  int mem;
+
+public:
+  Derived(int m1, int m2, int m3) : Base1(m1), Base2(m2), mem(m3) {
+    cout << "Derived is created." << endl;
+  }
+  void print() {
+    // cout << Base1::mem << " " << Base2::mem << " " << mem << endl;
+    Base1::print();
+    Base2::print();
+    cout << "Derived " << mem << endl;
+  }
+  ~Derived() {
+    cout << "Derived is erased." << endl;
   }
 };
 int main() {
-  Student s1(10, "a");
-  Student s2(s1);
-  Person *s3 = &s1;
-  Person &s4 = s2;
-  Person p(20);
-  s1.print();
-  s2.print();
-  s3->print();
+  Derived obj(1, 2, 3);
+  obj.print();
+  obj.Base1::print();
   return 0;
 }
