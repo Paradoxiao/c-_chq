@@ -1,57 +1,49 @@
 #include <iostream>
 using namespace std;
-class Base1 {
+class A {
 protected:
-  int mem;
+  int m;
 
 public:
-  Base1(int m) : mem(m) {
-    cout << "Base1 is created." << endl;
+  A(int x) : m(x) {
+    cout << "A" << endl;
   }
-  ~Base1() {
-    cout << "Base1 is erased." << endl;
-  }
-  void print() {
-    cout << "Base1 " << mem << endl;
+  ~A() {
+    cout << "~A" << endl;
   }
 };
-class Base2 {
-protected:
-  int mem;
-
+class B : virtual public A {
 public:
-  Base2(int m) : mem(m) {
-    cout << "Base2 is created." << endl;
+  B(int x) : A(x) {
+    cout << "B" << endl;
   }
-  ~Base2() {
-    cout << "Base2 is erased." << endl;
-  }
-
-  void print() {
-    cout << "Base2 " << mem << endl;
+  ~B() {
+    cout << "~B" << endl;
   }
 };
-class Derived : public Base1, public Base2 {
-private:
-  int mem;
-
+class C : virtual public A {
 public:
-  Derived(int m1, int m2, int m3) : Base1(m1), Base2(m2), mem(m3) {
-    cout << "Derived is created." << endl;
+  C(int x) : A(x) {
+    cout << "C" << endl;
   }
+  ~C() {
+    cout << "~C" << endl;
+  }
+};
+class D : public B, public C {
+public:
   void print() {
-    // cout << Base1::mem << " " << Base2::mem << " " << mem << endl;
-    Base1::print();
-    Base2::print();
-    cout << "Derived " << mem << endl;
+    cout << B::m << endl;
   }
-  ~Derived() {
-    cout << "Derived is erased." << endl;
+  D(int x) : A(x), B(x), C(x) {
+    cout << "D" << endl;
+  }
+  ~D() {
+    cout << "~D" << endl;
   }
 };
 int main() {
-  Derived obj(1, 2, 3);
-  obj.print();
-  obj.Base1::print();
+  D d(10);
+  d.print();
   return 0;
 }
