@@ -1,92 +1,78 @@
+#include <cstring>
+#include <iomanip>
 #include <iostream>
+#include <ostream>
 using namespace std;
-class Array {
+class Time {
 private:
-  int arr[1000];
-  int len;
+  int hour, minute, second;
+  char *name;
 
 public:
-  Array(int l, int a[]) {
-    len = l;
-    int i;
-    for (i = 0; i < len; i++)
-      arr[i] = a[i];
-    // for (; i < 1000; i++)
-    //   arr[i] = 0;
+  Time(int h = 0, int m = 0, int s = 0) : hour(h), minute(m), second(s) {}
+  // void print() {
+  //   cout << setw(2) << setfill('0') << hour << ":" << setw(2) << setfill('0') << minute << ":" << setw(2) << setfill('0') << second << endl;
+  // }
+  operator int() {
+    return hour * 3600 + minute * 60 + second;
   }
-  Array() {}
-  void print() {
-    for (int i = 0; i < len; i++)
-      cout << arr[i] << " ";
-    cout << endl;
+  void operator=(const Time &other) {
+    hour = other.hour;
+    minute = other.minute;
+    second = other.second;
+    name = new char[strlen(other.name) + 1];
+    strcpy(name, other.name);
   }
-  bool operator>(const Array &other) {
-    int i;
-    for (i = 0; i < len && i < other.len; i++) {
-      if (arr[i] > other.arr[i])
-        return 1;
-      if (arr[i] < other.arr[i])
-        return 0;
-    }
-    if (i < len)
-      return 1;
-    // if (i < other.len)
-    //   return 0;
-    return 0;
-  }
-  Array operator+(const Array &other) {
-    int i = 0, j = 0, k = 0;
-    Array sum;
-    // sum.len = other.len > len ? other.len : len;
-    while (i < len && j < other.len)
-      sum.arr[k++] = arr[i++] + other.arr[j++];
-    // if (i == len)
-    while (j < other.len)
-      sum.arr[k++] = other.arr[j++];
-    // else
-    while (i < len)
-      sum.arr[k++] = arr[i++];
-    sum.len = k;
-    return sum;
-  }
-  Array operator=(const Array &other) {
-    len = other.len;
-    for (int i = 0; i < len; i++)
-      arr[i] = other.arr[i];
+  Time operator++() {
+    *this += 1;
     return *this;
-  };
-  void my_sort(Array arrs[], int n) {
-    Array temp;
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n - i - 1; j++) {
-        temp = arrs[i];
-        if (arrs[j] > arrs[j + 1]) {
-          arrs[i] = arrs[j + 1];
-          arrs[j + 1] = temp;
-        }
-      }
-    }
   }
+  Time operator++(int) {
+    Time temp = *this;
+    *this += 1;
+    return temp;
+  }
+  Time operator+=(int seconds) {
+    *this = *this + seconds;
+    return *this;
+  }
+  Time operator+(int seconds) {
+    int totalSeconds = hour * 3600 + minute * 60 + second + seconds;
+    while (totalSeconds < 0)
+      totalSeconds += 3600 * 24;
+    totalSeconds %= 3600 * 24;
+    return Time(totalSeconds / 3600, (totalSeconds % 3600) / 60, totalSeconds % 60);
+  }
+  int operator-(const Time &other) {
+    int thisTotalSeconds = hour * 3600 + minute * 60 + second;
+    int otherTotalSeconds = other.hour * 3600 + other.minute * 60 + other.second;
+    return (thisTotalSeconds - otherTotalSeconds + 3600 * 24) % (3600 * 24);
+  }
+  // NOTE: 友元函数不是成员函数
+  friend istream &operator>>(istream &is, Time &other);
+  friend ostream &operator<<(ostream &os, const Time &other);
+  // {
+  //   os << setw(2) << setfill('0') << other.hour << ":" << setw(2) << setfill('0') << other.minute << ":" << setw(2) << setfill('0') << other.second << endl;
+  //   return os;
+  // }
 };
+ostream &operator<<(ostream &os, const Time &t) {
+  os << setw(2) << setfill('0') << t.hour << ":" << setw(2) << setfill('0') << t.minute << ":" << setw(2) << setfill('0') << t.second << endl;
+  return os;
+}
+istream &operator>>(istream &is, Time &t) {
+  char _;
+  is >> t.hour >> _ >> t.minute >> _ >> t.second;
+  return is;
+}
 int main() {
-  Array arrs[10];
-  int a[1000];
-  int i;
-  for (i = 0; i < 10; i++) {
-    a[i] = i + 1;
-  }
-  Array array1(10, a);
-  for (i = 0; i < 10; i++) {
-    a[i] = i * 10 + 1;
-  }
-  Array array2(10, a);
-  array1.print();
-  array2.print();
-  // Array array3 = array1 + array2;
-  // array3.print();
-  if (array1 > array2)
-    cout << "Larger" << endl;
-  else
-    cout << "Lower" << endl;
+  Time one(10, 1, 1), two(9, 9, 9), time(0, 0, 0);
+  void *p = &one;
+  cin >> one >> two >> time;
+  // cout << (one + -300000);
+  // cout << one - two << endl;
+  cout << one << two << time;
+  cout << (int)one << endl;
+  cout << *(unsigned long long *)p << endl;
   return 0;
 }
