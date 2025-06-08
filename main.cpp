@@ -1,78 +1,137 @@
-#include <cstring>
-#include <iomanip>
+#include <algorithm>
 #include <iostream>
-#include <ostream>
+#include <numeric>
 using namespace std;
-class Time {
+class MySet {
 private:
-  int hour, minute, second;
-  char *name;
+  int *array;
+  int len;
 
 public:
-  Time(int h = 0, int m = 0, int s = 0) : hour(h), minute(m), second(s) {}
-  // void print() {
-  //   cout << setw(2) << setfill('0') << hour << ":" << setw(2) << setfill('0') << minute << ":" << setw(2) << setfill('0') << second << endl;
-  // }
-  operator int() {
-    return hour * 3600 + minute * 60 + second;
-  }
-  void operator=(const Time &other) {
-    hour = other.hour;
-    minute = other.minute;
-    second = other.second;
-    name = new char[strlen(other.name) + 1];
-    strcpy(name, other.name);
-  }
-  Time operator++() {
-    *this += 1;
-    return *this;
-  }
-  Time operator++(int) {
-    Time temp = *this;
-    *this += 1;
-    return temp;
-  }
-  Time operator+=(int seconds) {
-    *this = *this + seconds;
-    return *this;
-  }
-  Time operator+(int seconds) {
-    int totalSeconds = hour * 3600 + minute * 60 + second + seconds;
-    while (totalSeconds < 0)
-      totalSeconds += 3600 * 24;
-    totalSeconds %= 3600 * 24;
-    return Time(totalSeconds / 3600, (totalSeconds % 3600) / 60, totalSeconds % 60);
-  }
-  int operator-(const Time &other) {
-    int thisTotalSeconds = hour * 3600 + minute * 60 + second;
-    int otherTotalSeconds = other.hour * 3600 + other.minute * 60 + other.second;
-    return (thisTotalSeconds - otherTotalSeconds + 3600 * 24) % (3600 * 24);
-  }
-  // NOTE: 友元函数不是成员函数
-  friend istream &operator>>(istream &is, Time &other);
-  friend ostream &operator<<(ostream &os, const Time &other);
-  // {
-  //   os << setw(2) << setfill('0') << other.hour << ":" << setw(2) << setfill('0') << other.minute << ":" << setw(2) << setfill('0') << other.second << endl;
-  //   return os;
-  // }
+  MySet();
+  MySet(int *, int);
+  MySet(const MySet &);
+  ~MySet();
+  MySet &operator=(const MySet &); // 拷贝赋值
+  MySet operator+(const MySet &);  // 并集
+  MySet operator-(const MySet &);  // 差集
+  MySet operator*(const MySet &);  // 交集
+  MySet operator++();              // 每个元素加1
+  MySet operator++(int);           // 每个元素加1
+  int operator[](int);             // 返回下标
+  operator int();                  // 元素之和
+  operator double();               // 元素平均值
+  friend ostream &operator<<(ostream &, const MySet &);
+  friend istream &operator>>(istream &, MySet &);
 };
-ostream &operator<<(ostream &os, const Time &t) {
-  os << setw(2) << setfill('0') << t.hour << ":" << setw(2) << setfill('0') << t.minute << ":" << setw(2) << setfill('0') << t.second << endl;
+
+using namespace std;
+int main() {
+  // A: 5 1 2 3 4 5
+  // B: 4 3 4 5 6
+  // 5 1 2 3 4 5 4 3 4 5 6
+  MySet A, B;
+  cin >> A, cin >> B;
+  // 并集
+  MySet C = A + B, D = A - B, E = A * B;
+  cout << "A + B : " << C << endl;
+  // 差集
+  cout << "A - B : " << D << endl;
+  // 交集
+  cout << "A * B : " << E << endl;
+  // 前置++
+  cout << "++A: " << ++A << endl;
+  // 后置++
+  cout << "B++: " << B++ << endl;
+  cout << "B after B++: " << B << endl;
+  // 下标访问
+  cout << "C[0]: " << C[0] << endl;
+  // 转int（元素和）
+  cout << "(int)A : " << (int)A << endl;
+  // 转double（平均值）
+  cout << "(double)B : " << (double)B << endl;
+  return 0;
+}
+
+MySet::MySet() : array(nullptr), len(0) {}
+MySet::MySet(int *arr, int n) {
+  array = new int[n];
+  copy(arr, arr + n, array);
+  sort(array, array + n);
+  len = unique(array, array + n) - array;
+}
+MySet::MySet(const MySet &other) {
+  array = new int[other.len];
+  copy(other.array, other.array + other.len, array);
+  len = other.len;
+}
+MySet::~MySet() {
+  delete[] array;
+}
+MySet &MySet::operator=(const MySet &other) {
+  delete[] array;
+  array = new int[other.len];
+  copy(other.array, other.array + other.len, array);
+  len = other.len;
+  return *this;
+}
+MySet MySet::operator+(const MySet &other) {
+  MySet result;
+  result.array = new int[len + other.len];
+  result.len = set_union(array, array + len, other.array, other.array + other.len, result.array) - result.array;
+  return result;
+}
+MySet MySet::operator-(const MySet &other) {
+  MySet result;
+  result.array = new int[len];
+  result.len = set_difference(array, array + len, other.array, other.array + other.len, result.array) - result.array;
+  return result;
+}
+MySet MySet::operator*(const MySet &other) {
+  MySet result;
+  result.array = new int[min(len, other.len)];
+  result.len = set_intersection(array, array + len, other.array, other.array + other.len, result.array) - result.array;
+  return result;
+}
+MySet MySet::operator++() {
+  for (int i = 0; i < len; i++)
+    array[i]++;
+  return *this;
+}
+MySet MySet::operator++(int) {
+  MySet temp = *this;
+  for (int i = 0; i < len; i++)
+    array[i]++;
+  return temp;
+}
+int MySet::operator[](int i) {
+  if (i < 0 || i >= len)
+    exit(1);
+  return array[i];
+}
+MySet::operator int() {
+  int sum = 0;
+  for (int i = 0; i < len; i++)
+    sum += array[i];
+  return sum;
+}
+MySet::operator double() {
+  return accumulate(array, array + len, 0.0) / len;
+}
+ostream &operator<<(ostream &os, const MySet &my_set) {
+  for (int i = 0; i < my_set.len; i++)
+    os << (i ? " " : "") << my_set.array[i];
   return os;
 }
-istream &operator>>(istream &is, Time &t) {
-  char _;
-  is >> t.hour >> _ >> t.minute >> _ >> t.second;
+istream &operator>>(istream &is, MySet &my_set) {
+  int n;
+  is >> n;
+  delete[] my_set.array;
+  my_set.array = new int[n];
+  my_set.len = n;
+  for (int i = 0; i < n; i++)
+    is >> my_set.array[i];
+  sort(my_set.array, my_set.array + n);
+  my_set.len = unique(my_set.array, my_set.array + n) - my_set.array;
   return is;
-}
-int main() {
-  Time one(10, 1, 1), two(9, 9, 9), time(0, 0, 0);
-  void *p = &one;
-  cin >> one >> two >> time;
-  // cout << (one + -300000);
-  // cout << one - two << endl;
-  cout << one << two << time;
-  cout << (int)one << endl;
-  cout << *(unsigned long long *)p << endl;
-  return 0;
 }
