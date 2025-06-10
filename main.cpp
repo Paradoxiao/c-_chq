@@ -1,10 +1,8 @@
-#include <algorithm>
 #include <iostream>
-#include <numeric>
 using namespace std;
 class MySet {
 private:
-  int *array;
+  int *my_array;
   int len;
 
 public:
@@ -53,85 +51,133 @@ int main() {
   return 0;
 }
 
-MySet::MySet() : array(nullptr), len(0) {}
+// #include <algorithm>
+// #include <numeric>
+MySet::MySet() : my_array(nullptr), len(0) {}
 MySet::MySet(int *arr, int n) {
-  array = new int[n];
-  copy(arr, arr + n, array);
-  sort(array, array + n);
-  len = unique(array, array + n) - array;
+  my_array = new int[n];
+  for (int i = 0; i < n; i++)
+    my_array[i] = arr[i];
+  for (int i = 0; i < n; i++)
+    for (int j = 0; j < n - i - 1; j++)
+      if (my_array[j] > my_array[j + 1]) {
+        int _ = my_array[j];
+        my_array[j] = my_array[j + 1];
+        my_array[j + 1] = _;
+      }
+  //  sort(array, array + len);
+  len = n;
 }
 MySet::MySet(const MySet &other) {
-  array = new int[other.len];
-  copy(other.array, other.array + other.len, array);
+  my_array = new int[other.len];
+  for (int i = 0; i < other.len; i++)
+    my_array[i] = other.my_array[i];
+  //  copy(other.array, other.array + other.len, array);
   len = other.len;
 }
 MySet::~MySet() {
-  delete[] array;
+  delete[] my_array;
 }
 MySet &MySet::operator=(const MySet &other) {
-  delete[] array;
-  array = new int[other.len];
-  copy(other.array, other.array + other.len, array);
+  delete[] my_array;
+  my_array = new int[other.len];
+  for (int i = 0; i < other.len; i++)
+    my_array[i] = other.my_array[i];
+  //  copy(other.array, other.array + other.len, array);
   len = other.len;
   return *this;
 }
 MySet MySet::operator+(const MySet &other) {
   MySet result;
-  result.array = new int[len + other.len];
-  result.len = set_union(array, array + len, other.array, other.array + other.len, result.array) - result.array;
+  result.my_array = new int[len + other.len];
+  int i = 0, j = 0, k = 0;
+  while (i < len && j < other.len)
+    if (my_array[i] < other.my_array[j])
+      result.my_array[k++] = my_array[i++];
+    else if (my_array[i] > other.my_array[j])
+      result.my_array[k++] = other.my_array[j++];
+    else
+      result.my_array[k++] = my_array[i++], j++;
+  while (i < len)
+    result.my_array[k++] = my_array[i++];
+  while (j < other.len)
+    result.my_array[k++] = other.my_array[j++];
+  result.len = k;
+  // result.len = set_union(array, array + len, other.array, other.array + other.len, result.array) - result.array;
   return result;
 }
 MySet MySet::operator-(const MySet &other) {
   MySet result;
-  result.array = new int[len];
-  result.len = set_difference(array, array + len, other.array, other.array + other.len, result.array) - result.array;
+  result.my_array = new int[len];
+  int i = 0, j = 0, k = 0;
+  while (i < len && j < other.len)
+    if (my_array[i] < other.my_array[j])
+      result.my_array[k++] = my_array[i++];
+    else if (my_array[i] > other.my_array[j])
+      j++;
+    else
+      i++, j++;
+  while (i < len)
+    result.my_array[k++] = my_array[i++];
+  result.len = k;
+  // result.len = set_difference(array, array + len, other.array, other.array + other.len, result.array) - result.array;
   return result;
 }
 MySet MySet::operator*(const MySet &other) {
   MySet result;
-  result.array = new int[min(len, other.len)];
-  result.len = set_intersection(array, array + len, other.array, other.array + other.len, result.array) - result.array;
+  result.my_array = new int[len < other.len ? len : other.len];
+  int i = 0, j = 0, k = 0;
+  while (i < len && j < other.len)
+    if (my_array[i] < other.my_array[j])
+      i++;
+    else if (my_array[i] > other.my_array[j])
+      j++;
+    else
+      result.my_array[k++] = my_array[i++], j++;
+  // result.len = set_intersection(array, array + len, other.array, other.array + other.len, result.array) - result.array;
+  result.len = k;
   return result;
 }
 MySet MySet::operator++() {
   for (int i = 0; i < len; i++)
-    array[i]++;
+    my_array[i]++;
   return *this;
 }
 MySet MySet::operator++(int) {
   MySet temp = *this;
   for (int i = 0; i < len; i++)
-    array[i]++;
+    my_array[i]++;
   return temp;
 }
 int MySet::operator[](int i) {
   if (i < 0 || i >= len)
     exit(1);
-  return array[i];
+  return my_array[i];
 }
 MySet::operator int() {
   int sum = 0;
   for (int i = 0; i < len; i++)
-    sum += array[i];
+    sum += my_array[i];
   return sum;
 }
 MySet::operator double() {
-  return accumulate(array, array + len, 0.0) / len;
+  double sum = (int)*this;
+  return sum / len;
+  // return accumulate(array, array + len, 0.0) / len;
 }
 ostream &operator<<(ostream &os, const MySet &my_set) {
+  os << "{";
   for (int i = 0; i < my_set.len; i++)
-    os << (i ? " " : "") << my_set.array[i];
+    os << (i ? " " : "") << my_set.my_array[i];
+  os << "}";
   return os;
 }
 istream &operator>>(istream &is, MySet &my_set) {
   int n;
   is >> n;
-  delete[] my_set.array;
-  my_set.array = new int[n];
-  my_set.len = n;
+  int *array = new int[n];
   for (int i = 0; i < n; i++)
-    is >> my_set.array[i];
-  sort(my_set.array, my_set.array + n);
-  my_set.len = unique(my_set.array, my_set.array + n) - my_set.array;
+    is >> array[i];
+  my_set = MySet(array, n);
   return is;
 }
