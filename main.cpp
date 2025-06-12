@@ -1,48 +1,57 @@
 #include <iostream>
+#include <ostream>
+#include <typeinfo>
 using namespace std;
-bool cmp_1(int a, int b) {
-  return a > b;
-}
-bool cmp_2(int a, int b) {
-  return a <= b;
-}
-class Solve {
+class Person {
 private:
-  int *arr, n;
+  int age;
 
 public:
-  void input() {
-    cin >> n;
-    for (int i = 0; i < n; i++)
-      cin >> arr[i];
+  Person(int age = 20) : age(age) {
+    cout << "Person" << endl;
   }
-  void sort() {
-    int _;
-    for (int i = 0; i < n / 2; i++) {
-      for (int j = 0; j + 2 < n; j += 2)
-        if (cmp_2(arr[j], arr[j + 2])) {
-          _ = arr[j];
-          arr[j] = arr[j + 2];
-          arr[j + 2] = _;
-        }
-      for (int j = 1; j + 2 < n; j += 2)
-        if (cmp_1(arr[j], arr[j + 2])) {
-          _ = arr[j];
-          arr[j] = arr[j + 2];
-          arr[j + 2] = _;
-        }
+  Person(const Person &other) : age(other.age) {
+    cout << "Copy Person" << endl;
+  }
+  friend ostream &operator<<(ostream &os, Person p) {
+    os << p.age;
+    return os;
+  }
+};
+template <typename T> class Data {
+private:
+  T mem;
+
+public:
+  Data(T mem) : mem(mem) {
+    if (typeid(T) == typeid(int)) {
+      cout << "Int Constructor" << endl;
+      return;
+    }
+    if (typeid(T) == typeid(double)) {
+      cout << "Double Constructor" << endl;
+      return;
+    }
+    if (typeid(T) == typeid(Person)) {
+      cout << "Person Constructor" << endl;
+      return;
     }
   }
-  void output() {
-    cout << *arr;
-    for (int i = 1; i < n; i++)
-      cout << " " << arr[i];
+  friend ostream &operator<<(ostream &os, Data<T> data) {
+    os << data.mem << "<<";
+    return os;
+  }
+  void print() {
+    cout << mem << endl;
   }
 };
 int main() {
-  Solve solve;
-  solve.input();
-  solve.sort();
-  solve.output();
+  // Data<int> data1(10);
+  // Data<double> data2(20);
+  // data1.print();
+  // data2.print();
+  Person p;
+  Data<Person> data3(p);
+  cout << data3;
   return 0;
 }
