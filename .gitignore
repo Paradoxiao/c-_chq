@@ -2,3 +2,4 @@ obj/
 CodeBlocksDebug
 CodeBlocksDebug.*
 out.exe
+*.txt

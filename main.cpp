@@ -1,57 +1,22 @@
 #include <iostream>
-#include <ostream>
-#include <typeinfo>
 using namespace std;
-class Person {
-private:
-  int age;
-
-public:
-  Person(int age = 20) : age(age) {
-    cout << "Person" << endl;
+int k = 0;
+void permute(int *a, int n, int l, int r) {
+  if (l == r - 1) {
+    cout << ++k << ":";
+    for (int i = 0; i < n; i++)
+      cout << a[i] << " ";
+    cout << endl;
+    return;
   }
-  Person(const Person &other) : age(other.age) {
-    cout << "Copy Person" << endl;
+  for (int i = l; i < r; i++) {
+    swap(a[l], a[i]);
+    permute(a, n, l + 1, r);
+    swap(a[l], a[i]);
   }
-  friend ostream &operator<<(ostream &os, Person p) {
-    os << p.age;
-    return os;
-  }
-};
-template <typename T> class Data {
-private:
-  T mem;
-
-public:
-  Data(T mem) : mem(mem) {
-    if (typeid(T) == typeid(int)) {
-      cout << "Int Constructor" << endl;
-      return;
-    }
-    if (typeid(T) == typeid(double)) {
-      cout << "Double Constructor" << endl;
-      return;
-    }
-    if (typeid(T) == typeid(Person)) {
-      cout << "Person Constructor" << endl;
-      return;
-    }
-  }
-  friend ostream &operator<<(ostream &os, Data<T> data) {
-    os << data.mem << "<<";
-    return os;
-  }
-  void print() {
-    cout << mem << endl;
-  }
-};
+}
 int main() {
-  // Data<int> data1(10);
-  // Data<double> data2(20);
-  // data1.print();
-  // data2.print();
-  Person p;
-  Data<Person> data3(p);
-  cout << data3;
+  int a[] = {1, 2, 3, 4, 5};
+  permute(a, 5, 0, 5);
   return 0;
 }
